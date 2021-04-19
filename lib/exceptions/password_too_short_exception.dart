@@ -1,0 +1,1 @@
+class PasswordTooShortException implements Exception {}

@@ -1,0 +1,1 @@
+class EmailAlreadyExistsException implements Exception {}
