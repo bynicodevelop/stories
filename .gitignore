@@ -47,3 +47,4 @@ app.*.map.json
 
 .firebaserc
 android/app/google-services.json
+web/index.html
