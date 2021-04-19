@@ -67,7 +67,7 @@ class App extends StatelessWidget {
           create: (context) => UserBloc(userRepository),
         ),
         BlocProvider<StoriesBloc>(
-          create: (context) => StoriesBloc(),
+          create: (context) => StoriesBloc(profileRepository),
         )
       ],
       child: MaterialApp(
@@ -124,12 +124,15 @@ class App extends StatelessWidget {
           ExplorerScreen.ROUTE: (_) => ExplorerScreen(),
         },
         onGenerateRoute: (settings) {
-          if (settings.name == StoryViewScreen.ROUTE) {
+          RegExp storyview = RegExp(r"\/storyview\/([a-z0-9\-\_]+)");
+
+          if (storyview.hasMatch(settings.name!)) {
+            RegExpMatch? match = storyview.firstMatch(settings.name!);
+
             return MaterialPageRoute(
               settings: settings,
               builder: (context) => StoryViewScreen(
-                profileModel:
-                    (settings.arguments as ProfileArguments).profileModel,
+                slug: match!.group(1)!,
               ),
             );
           }
