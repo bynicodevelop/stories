@@ -11,8 +11,8 @@ const COLLECTIONS = {
   POSTS: "posts",
 };
 
-const getUserBySlug = async (slug) =>
-  await admin.firestore().collection(COLLECTIONS.USERS).doc(slug).get();
+const getUserByUid = async (uid) =>
+  await admin.firestore().collection(COLLECTIONS.USERS).doc(uid).get();
 
 const generateDate = (days) => {
   const randomDay = Math.floor(Math.random() * days) + 1;
@@ -22,24 +22,32 @@ const generateDate = (days) => {
 
 exports.populate = functions.https.onRequest(async (request, response) => {
   dataSet.forEach(async (data) => {
-    const { slug, displayName } = data["users"];
+    const { slug, displayName, avatar } = data["users"];
+
+    const user = await admin.auth().createUser({
+      email: `${slug}@domain.tld`,
+      password: "123456",
+    });
+
+    const { uid } = user;
 
     await admin
       .firestore()
       .collection(COLLECTIONS.USERS)
-      .doc(slug)
-      .set({ displayName });
+      .doc(uid)
+      .set({ displayName, slug, avatar });
 
-    const userRef = await getUserBySlug(slug);
+    const userRef = await getUserByUid(uid);
 
     data["posts"].forEach(async (post) => {
-      const { media } = post;
+      const { media, likes } = post;
 
       await admin
         .firestore()
         .collection(COLLECTIONS.POSTS)
         .add({
           media,
+          likes,
           createdAt: generateDate(300).unix(),
           userRef: userRef.ref,
         });
