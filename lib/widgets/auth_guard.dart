@@ -25,7 +25,9 @@ class AuthGuard extends StatelessWidget {
           return SizedBox.shrink();
         }
 
-        context.read<UserBloc>().add(LoadUserEvent());
+        if (state is AuthenticatedState) {
+          context.read<UserBloc>().add(LoadUserEvent());
+        }
 
         return child;
       },

@@ -27,21 +27,25 @@ import 'package:kdofavoris/widgets/auth_guard.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  }
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  String host = defaultTargetPlatform == TargetPlatform.android
-      ? '10.0.2.2:8080'
-      : 'localhost:8080';
+  if (!kIsWeb) {
+    String host = defaultTargetPlatform == TargetPlatform.android
+        ? '10.0.2.2:8080'
+        : 'localhost:8080';
 
-  firestore.settings = Settings(
-    host: host,
-    sslEnabled: false,
-  );
+    firestore.settings = Settings(
+      host: host,
+      sslEnabled: false,
+    );
 
-  firebaseAuth.useEmulator('http://localhost:9099');
+    firebaseAuth.useEmulator('http://localhost:9099');
+  }
 
   runApp(App(
     firebaseAuth,
