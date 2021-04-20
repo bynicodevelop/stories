@@ -77,7 +77,7 @@ class _CardStoryComponentState extends State<CardStoryComponent> {
                 child: InkWell(onTap: () {
                   Navigator.pushNamed(
                     context,
-                    StoryViewScreen.ROUTE,
+                    "${StoryViewScreen.ROUTE}/${widget.profileModel.slug}",
                     arguments: ProfileArguments(widget.profileModel),
                   );
                 }),

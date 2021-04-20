@@ -8,7 +8,13 @@ abstract class StoriesEvent extends Equatable {
 }
 
 class LoadStoriesEvent extends StoriesEvent {
-  final ProfileModel profileModel;
+  final String slug;
 
-  LoadStoriesEvent(this.profileModel);
+  LoadStoriesEvent(this.slug);
+}
+
+class LikeStoriesEvent extends StoriesEvent {
+  final StoryModel storyModel;
+
+  LikeStoriesEvent(this.storyModel);
 }

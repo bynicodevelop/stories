@@ -13,12 +13,15 @@ import 'package:kdofavoris/screens/auth/profile_screen.dart';
 import 'package:kdofavoris/screens/auth/register_screen.dart';
 import 'package:kdofavoris/screens/explorer_screen.dart';
 import 'package:kdofavoris/screens/main_screen.dart';
+import 'package:kdofavoris/screens/settings_screen.dart';
 import 'package:kdofavoris/screens/story_view_screen.dart';
 import 'package:kdofavoris/services/authentication/authentication_bloc.dart';
 import 'package:kdofavoris/services/profile/profile_bloc.dart';
 import 'package:kdofavoris/services/stories/stories_bloc.dart';
 import 'package:kdofavoris/services/user/user_bloc.dart';
 import 'package:kdofavoris/style.dart';
+import 'package:kdofavoris/transitions/remove_transition.dart';
+import 'package:kdofavoris/widgets/auth_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +41,8 @@ void main() async {
 
 // ignore: must_be_immutable
 class App extends StatelessWidget {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
+
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
 
@@ -58,7 +63,8 @@ class App extends StatelessWidget {
           create: (context) => FormAuthBloc(),
         ),
         BlocProvider<AuthenticationBloc>(
-          create: (context) => AuthenticationBloc(authRepository),
+          create: (context) => AuthenticationBloc(authRepository)
+            ..add(AuthenticationInializeEvent()),
         ),
         BlocProvider<ProfileBloc>(
           create: (context) => ProfileBloc(profileRepository),
@@ -67,35 +73,31 @@ class App extends StatelessWidget {
           create: (context) => UserBloc(userRepository),
         ),
         BlocProvider<StoriesBloc>(
-          create: (context) => StoriesBloc(),
+          create: (context) => StoriesBloc(profileRepository),
         )
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
+        navigatorKey: _navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           inputDecorationTheme: InputDecorationTheme(
-            labelStyle: TextStyle(
-              color: Colors.white,
-            ),
+            labelStyle: TextStyle(),
             fillColor: Colors.white.withOpacity(.3),
             filled: true,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 style: BorderStyle.solid,
-                color: Colors.white,
               ),
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(
                 style: BorderStyle.solid,
-                color: Colors.white,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 style: BorderStyle.solid,
-                color: Colors.white,
               ),
             ),
           ),
@@ -117,20 +119,39 @@ class App extends StatelessWidget {
         ),
         initialRoute: MainScreen.ROUTE,
         routes: {
-          MainScreen.ROUTE: (_) => MainScreen(),
+          MainScreen.ROUTE: (_) => AuthGuard(
+                child: MainScreen(),
+              ),
           RegisterScreen.ROUTE: (_) => RegisterScreen(),
-          LoginScreen.ROUTE: (_) => LoginScreen(),
-          ProfileScreen.ROUTE: (_) => ProfileScreen(),
-          ExplorerScreen.ROUTE: (_) => ExplorerScreen(),
+          // LoginScreen.ROUTE: (_) => LoginScreen(),
+          ProfileScreen.ROUTE: (_) => AuthGuard(
+                child: ProfileScreen(),
+              ),
+          ExplorerScreen.ROUTE: (_) => AuthGuard(
+                child: ExplorerScreen(),
+              ),
+          SettingsScreen.ROUTE: (_) => AuthGuard(
+                child: SettingsScreen(),
+              ),
         },
         onGenerateRoute: (settings) {
-          if (settings.name == StoryViewScreen.ROUTE) {
+          RegExp storyview = RegExp(r"\/storyview\/([a-z0-9\-\_]+)");
+
+          if (storyview.hasMatch(settings.name!)) {
+            RegExpMatch? match = storyview.firstMatch(settings.name!);
+
             return MaterialPageRoute(
               settings: settings,
-              builder: (context) => StoryViewScreen(
-                profileModel:
-                    (settings.arguments as ProfileArguments).profileModel,
+              builder: (context) => AuthGuard(
+                child: StoryViewScreen(
+                  slug: match!.group(1)!,
+                ),
               ),
+            );
+          } else if (settings.name == LoginScreen.ROUTE) {
+            return RemoveTransitionPageRoute(
+              settings: settings,
+              builder: (_) => LoginScreen(),
             );
           }
         },
