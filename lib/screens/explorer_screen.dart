@@ -16,57 +16,6 @@ class ExplorerScreen extends StatefulWidget {
 }
 
 class _ExplorerScreenState extends State<ExplorerScreen> {
-  final List<Map<String, dynamic>> _listStories = [
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/2728829/pexels-photo-2728829.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/2668417/pexels-photo-2668417.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/1887195/pexels-photo-1887195.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/6300215/pexels-photo-6300215.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/2728829/pexels-photo-2728829.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/2668417/pexels-photo-2668417.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/1887195/pexels-photo-1887195.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    },
-    {
-      "previewStory":
-          "https://images.pexels.com/photos/6300215/pexels-photo-6300215.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-      "avatar":
-          "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    }
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -122,7 +71,7 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
                       (BuildContext context, int index) {
                         return CardStoryComponent(
                           profileModel: state.profiles[index],
-                          ratio: 1,
+                          ratio: 1.5,
                         );
                       },
                       childCount: state.profiles.length,
