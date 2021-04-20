@@ -30,21 +30,17 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     if (event is LoadStoriesEvent) {
       yield StoriesLoadingState();
 
-      try {
-        ProfileModel? profileModel =
-            await _profileRepository.profileBySlug(event.slug);
+      ProfileModel? profileModel =
+          await _profileRepository.profileBySlug(event.slug);
 
-        if (profileModel == null) {
-          yield StoriesErrorState(StoriesErrorStatus.noFound);
-          return;
-        }
-
-        yield StoriesLoadedState(
-          profileModel: profileModel,
-        );
-      } catch (e) {
-        print(e);
+      if (profileModel == null) {
+        yield StoriesErrorState(StoriesErrorStatus.noFound);
+        return;
       }
+
+      yield StoriesLoadedState(
+        profileModel: profileModel,
+      );
     } else if (event is LikeStoriesEvent) {
       yield StoriesLikeInProgressState(
           (state as StoriesInitialState).profileModel);

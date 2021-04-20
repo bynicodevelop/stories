@@ -36,6 +36,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         followings: followings,
         followers: followers,
       );
+    } else if (event is CleanUserEvent) {
+      yield (state as UserInitialState).copyWith(
+        userModel: UserModel(
+          uid: "",
+          displayName: "",
+          avatar: "",
+          slug: "",
+        ),
+        followings: [],
+        followers: [],
+      );
     }
   }
 }

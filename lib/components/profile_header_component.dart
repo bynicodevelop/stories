@@ -4,20 +4,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kdofavoris/components/stat_component.dart';
 import 'package:kdofavoris/services/user/user_bloc.dart';
 
-class ProfileHeaderComponent extends StatefulWidget {
+class ProfileHeaderComponent extends StatelessWidget {
   const ProfileHeaderComponent({Key? key}) : super(key: key);
-
-  @override
-  _ProfileHeaderComponentState createState() => _ProfileHeaderComponentState();
-}
-
-class _ProfileHeaderComponentState extends State<ProfileHeaderComponent> {
-  @override
-  void initState() {
-    super.initState();
-
-    context.read<UserBloc>().add(LoadUserEvent());
-  }
 
   @override
   Widget build(BuildContext context) {

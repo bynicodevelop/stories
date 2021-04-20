@@ -101,4 +101,21 @@ main() {
       },
     );
   });
+
+  blocTest<UserBloc, UserState>(
+    "Doit permettre de clean un utilisateur quand celui-ci se déconnecte",
+    build: () {
+      UserBloc userBloc = UserBloc(_userRepositoryMock);
+
+      userBloc.emit(UserInitialState(userModel: _userModel));
+
+      return userBloc;
+    },
+    act: (bloc) => bloc.add(CleanUserEvent()),
+    verify: (bloc) {
+      expect((bloc.state as UserInitialState).userModel.uid, "");
+      expect((bloc.state as UserInitialState).followers.length, 0);
+      expect((bloc.state as UserInitialState).followings.length, 0);
+    },
+  );
 }

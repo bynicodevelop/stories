@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdofavoris/screens/auth/login_screen.dart';
 import 'package:kdofavoris/services/authentication/authentication_bloc.dart';
+import 'package:kdofavoris/services/user/user_bloc.dart';
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
@@ -24,12 +25,15 @@ class AuthGuard extends StatelessWidget {
           return SizedBox.shrink();
         }
 
+        context.read<UserBloc>().add(LoadUserEvent());
+
         return child;
       },
       listener: (context, state) {
-        print(state);
-        if (state is UnauthenticatedState)
+        if (state is UnauthenticatedState) {
+          context.read<UserBloc>().add(CleanUserEvent());
           Navigator.pushNamed(context, LoginScreen.ROUTE);
+        }
       },
     );
   }
