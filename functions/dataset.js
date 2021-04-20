@@ -6,6 +6,7 @@ exports.dataset = [
       avatar:
         "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     },
+    followings: ["janedoe"],
     posts: [
       {
         media:
@@ -40,6 +41,7 @@ exports.dataset = [
       avatar:
         "https://images.pexels.com/photos/3429740/pexels-photo-3429740.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     },
+    followings: ["johndoe", "bobe", "janee"],
     posts: [
       {
         media:
@@ -62,6 +64,7 @@ exports.dataset = [
       avatar:
         "https://images.pexels.com/photos/7330815/pexels-photo-7330815.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     },
+    followings: ["johndoe", "janee"],
     posts: [
       {
         media:

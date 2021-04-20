@@ -9,10 +9,20 @@ admin.initializeApp();
 const COLLECTIONS = {
   USERS: "users",
   POSTS: "posts",
+  FOLLOWINGS: "followings",
+  FOLLOWERS: "followers",
 };
 
 const getUserByUid = async (uid) =>
   await admin.firestore().collection(COLLECTIONS.USERS).doc(uid).get();
+
+const getUserBySlug = async (slug) =>
+  await admin
+    .firestore()
+    .collection(COLLECTIONS.USERS)
+    .limit(1)
+    .where("slug", "==", slug)
+    .get();
 
 const generateDate = (days) => {
   const randomDay = Math.floor(Math.random() * days) + 1;
@@ -39,23 +49,76 @@ exports.populate = functions.https.onRequest(async (request, response) => {
 
     const userRef = await getUserByUid(uid);
 
-    data["posts"].forEach(async (post) => {
-      const { media, likes } = post;
+    // data["posts"].forEach(async (post) => {
+    //   const { media, likes } = post;
 
-      await admin
-        .firestore()
-        .collection(COLLECTIONS.POSTS)
-        .add({
-          media,
-          likes,
-          createdAt: generateDate(300).unix(),
-          userRef: userRef.ref,
-        });
-    });
+    //   await admin
+    //     .firestore()
+    //     .collection(COLLECTIONS.POSTS)
+    //     .add({
+    //       media,
+    //       likes,
+    //       createdAt: generateDate(300).unix(),
+    //       userRef: userRef.ref,
+    //     });
+    // });
+
+    if (data["followings"]) {
+      data["followings"].forEach(async (followingSlug) => {
+        const followingRef = await getUserBySlug(followingSlug);
+
+        if (followingRef.docs.length > 0) {
+          const followingUser = followingRef.docs.shift();
+
+          userRef.ref
+            .collection(COLLECTIONS.FOLLOWINGS)
+            .doc(followingUser.id)
+            .set({ userRef: followingUser.ref });
+        }
+      });
+    }
   });
 
   response.json("ok");
 });
+
+/**
+ * Permet de créer une relation follower
+ * quand un utilisateur follow un profil
+ */
+exports.onFollowingCreated = functions.firestore
+  .document(
+    `${COLLECTIONS.USERS}/{userId}/${COLLECTIONS.FOLLOWINGS}/{followingId}`
+  )
+  .onCreate(async (snap, context) => {
+    const { ref } = snap;
+
+    const userFollowingRef = await getUserByUid(context.params.followingId);
+
+    await userFollowingRef.ref
+      .collection(COLLECTIONS.FOLLOWERS)
+      .doc(context.params.userId)
+      .set({
+        userRef: ref,
+      });
+  });
+
+/**
+ * Permet de supprimer la relation follower
+ * quand un utilisateur unfollow un profil
+ */
+exports.onFollowingDeleted = functions.firestore
+  .document(
+    `${COLLECTIONS.USERS}/{userId}/${COLLECTIONS.FOLLOWINGS}/{followingId}`
+  )
+  .onDelete(async (snap, context) => {
+    const userFollowingRef = await getUserByUid(context.params.followingId);
+
+    await userFollowingRef.ref
+      .collection(COLLECTIONS.FOLLOWERS)
+      .doc(context.params.userId)
+      .delete();
+  });
 
 /**
  * Permet de créer la relation avec le post
