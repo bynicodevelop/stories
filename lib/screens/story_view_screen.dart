@@ -29,7 +29,6 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<StoriesBloc, StoriesState>(
       builder: (context, state) {
-        print("BlocBuilder<StoriesBloc, StoriesState> $state");
         if ((state is StoriesLoadedState || state is StoriesLikedState) &&
             (state as StoriesInitialState).profileModel.slug == widget.slug) {
           return Scaffold(

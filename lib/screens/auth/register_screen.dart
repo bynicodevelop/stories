@@ -121,8 +121,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SingleChildScrollView(
           child: DeviceDetectorBuilder(
             builder: (BuildContext context, DeviceDetectorType device) {
-              print(device);
-
               if (device == DeviceDetectorType.desktop) {
                 return Padding(
                   padding: EdgeInsets.symmetric(

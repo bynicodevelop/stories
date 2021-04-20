@@ -188,30 +188,6 @@ class _VideoPlayerComponentState extends State<VideoPlayerComponent>
             ],
           ),
         ),
-        // Positioned(
-        //   bottom: 65.0,
-        //   left: 30.0,
-        //   child: SizedBox(
-        //     width: 290.0,
-        //     height: 45.0,
-        //     child: TextField(
-        //       decoration: InputDecoration(
-        //         hintText: 'Envoyer un commentaire...',
-        //         hintStyle:
-        //             Theme.of(context).textTheme.bodyText1!.copyWith(
-        //                   color: Colors.white,
-        //                 ),
-        //         suffixIcon: IconButton(
-        //           icon: Icon(
-        //             Icons.send,
-        //             color: Colors.white,
-        //           ),
-        //           onPressed: () => print("send comment"),
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // )
       ],
     );
   }

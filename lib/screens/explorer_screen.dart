@@ -60,11 +60,9 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
             sliver: BlocBuilder<ProfileBloc, ProfileState>(
               builder: (context, state) {
                 if (state is ProfileInitialState && state.profiles.length > 0) {
-                  print(state.profiles);
-
                   return SliverGrid(
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200.0,
+                      maxCrossAxisExtent: 150.0,
                       mainAxisSpacing: 10.0,
                       crossAxisSpacing: 10.0,
                       childAspectRatio: 9 / 16,
