@@ -3,8 +3,6 @@ import 'package:kdofavoris/models/profile_model.dart';
 import 'package:kdofavoris/models/story_model.dart';
 import 'package:kdofavoris/models/user_model.dart';
 import 'package:kdofavoris/repositories/auth_repository.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:path_provider/path_provider.dart';
 
 class UserRepository {
   AuthRepository _authRepository;
@@ -12,76 +10,72 @@ class UserRepository {
 
   UserRepository(this._authRepository, this._firebase);
 
-  Future<UserModel> get user async => Future.value(
-        UserModel(
-            uid: "123456789",
-            displayName: "John Doe",
-            slug: "johndoe",
-            avatar:
-                "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-            isAnonymous: false),
-      );
+  Future<DocumentSnapshot> _getUserById(String userId) async =>
+      await _firebase.collection("users").doc(userId).get();
 
-  Future<List<ProfileModel>> get followingrs async => await Future.value(
-        <ProfileModel>[
-          ProfileModel(
-            slug: "johndoe",
-            displayName: "John Doe",
-            avatar:
-                "https://images.pexels.com/photos/3429740/pexels-photo-3429740.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-            stories: [
-              StoryModel(
-                uid: "uid",
-                storyPath:
-                    "https://firebasestorage.googleapis.com/v0/b/formation-a1ba5.appspot.com/o/2500439112.mp4?alt=media&token=3f7aef13-5ccb-4227-8afd-5de45d9d9495",
-              ),
-              StoryModel(
-                uid: "uid",
-                storyPath:
-                    "https://firebasestorage.googleapis.com/v0/b/formation-a1ba5.appspot.com/o/2500439112.mp4?alt=media&token=3f7aef13-5ccb-4227-8afd-5de45d9d9495",
-              ),
-              StoryModel(
-                uid: "uid",
-                storyPath:
-                    "https://firebasestorage.googleapis.com/v0/b/formation-a1ba5.appspot.com/o/2144359980.mp4?alt=media&token=972ed0d4-d14e-4ed5-b0f2-8930494774db",
-              )
-            ],
-          ),
-          ProfileModel(
-            slug: "janedoe",
-            displayName: "John Doe",
-            avatar:
-                "https://images.pexels.com/photos/3429740/pexels-photo-3429740.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-            stories: [
-              StoryModel(
-                uid: "StoryModel1",
-                storyPath:
-                    "https://firebasestorage.googleapis.com/v0/b/formation-a1ba5.appspot.com/o/2500435977.mp4?alt=media&token=2207806d-731a-4810-9c1c-366d88bd7851",
-              ),
-              StoryModel(
-                uid: "StoryModel2",
-                storyPath:
-                    "https://firebasestorage.googleapis.com/v0/b/formation-a1ba5.appspot.com/o/2143313667.mp4?alt=media&token=925aa854-353e-4d00-a02b-3d01d9299ddb",
-              )
-            ],
-          ),
-        ],
-      );
+  Future<UserModel> get user async {
+    UserModel? userModel = await _authRepository.user;
 
-  Future<List<ProfileModel>> get followers async => Future.value([
-        ProfileModel(
-          slug: "johndoe",
-          displayName: "John Doe",
-          avatar:
-              "https://images.pexels.com/photos/3429740/pexels-photo-3429740.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-          stories: [],
-        ),
-        ProfileModel(
-          slug: "janndoe",
-          displayName: "Jane Doe",
-          avatar:
-              "https://images.pexels.com/photos/4842558/pexels-photo-4842558.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-          stories: [],
-        )
-      ]);
+    DocumentSnapshot documentSnapshot = await _getUserById(userModel!.uid);
+
+    return UserModel(
+      uid: documentSnapshot.id,
+      displayName: documentSnapshot.data()!["displayName"],
+      avatar: documentSnapshot.data()!["avatar"],
+      slug: documentSnapshot.data()!["slug"],
+    );
+  }
+
+  Future<List<ProfileModel>> get followingrs async {
+    UserModel? userModel = await _authRepository.user;
+
+    QuerySnapshot followingsQuerySnapshot = await _firebase
+        .collection("users")
+        .doc(userModel!.uid)
+        .collection("followings")
+        .get();
+
+    return Future.wait(followingsQuerySnapshot.docs.map((doc) async {
+      DocumentSnapshot userDocumentSnapshot = await _getUserById(doc.id);
+
+      QuerySnapshot postQuerySnapshot = await _firebase
+          .collection("posts")
+          .where("userRef", isEqualTo: doc.data()["userRef"])
+          .get();
+
+      return ProfileModel(
+        slug: userDocumentSnapshot.data()!["slug"],
+        displayName: userDocumentSnapshot.data()!["displayName"],
+        avatar: userDocumentSnapshot.data()!["avatar"],
+        stories: postQuerySnapshot.docs
+            .map(
+              (doc) => StoryModel(
+                uid: doc.id,
+                storyPath: doc.data()["media"],
+              ),
+            )
+            .toList(),
+      );
+    }).toList());
+  }
+
+  Future<List<ProfileModel>> get followers async {
+    UserModel? userModel = await _authRepository.user;
+
+    QuerySnapshot followersQuerySnapshot = await _firebase
+        .collection("users")
+        .doc(userModel!.uid)
+        .collection("followers")
+        .get();
+
+    return Future.wait(followersQuerySnapshot.docs.map((doc) async {
+      DocumentSnapshot userDocumentSnapshot = await _getUserById(doc.id);
+
+      return ProfileModel(
+        slug: userDocumentSnapshot.data()!["slug"],
+        displayName: userDocumentSnapshot.data()!["displayName"],
+        avatar: userDocumentSnapshot.data()!["avatar"],
+      );
+    }).toList());
+  }
 }

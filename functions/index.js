@@ -49,19 +49,19 @@ exports.populate = functions.https.onRequest(async (request, response) => {
 
     const userRef = await getUserByUid(uid);
 
-    // data["posts"].forEach(async (post) => {
-    //   const { media, likes } = post;
+    data["posts"].forEach(async (post) => {
+      const { media, likes } = post;
 
-    //   await admin
-    //     .firestore()
-    //     .collection(COLLECTIONS.POSTS)
-    //     .add({
-    //       media,
-    //       likes,
-    //       createdAt: generateDate(300).unix(),
-    //       userRef: userRef.ref,
-    //     });
-    // });
+      await admin
+        .firestore()
+        .collection(COLLECTIONS.POSTS)
+        .add({
+          media,
+          likes,
+          createdAt: generateDate(300).unix(),
+          userRef: userRef.ref,
+        });
+    });
 
     if (data["followings"]) {
       data["followings"].forEach(async (followingSlug) => {

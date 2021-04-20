@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdofavoris/arguments/profile_arguments.dart';
@@ -30,6 +31,15 @@ void main() async {
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  String host = defaultTargetPlatform == TargetPlatform.android
+      ? '10.0.2.2:8080'
+      : 'localhost:8080';
+
+  firestore.settings = Settings(
+    host: host,
+    sslEnabled: false,
+  );
 
   firebaseAuth.useEmulator('http://localhost:9099');
 
